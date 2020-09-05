@@ -1,0 +1,39 @@
+version: "3.3"
+
+services:
+  apache:
+    image: "supracarol/apache-shib-reverse-proxy:0.0.1"
+    ports:
+            - "8080:80"
+    container_name: "apache-shib" 
+    environment:
+        - SERVER_NAME=server.local
+        - SHIB_SCHEME=http
+        - SP_CERT
+        - SP_KEY
+        - PROXY_PASS_TEST1_SRC="/test1"
+        - PROXY_PASS_TEST1_TGT="http://test1:8080"
+        - PROXY_PASS_TEST2_SRC="/test2"
+        - PROXY_PASS_TEST2_TGT="http://test2:8080"
+    networks:
+            second: 
+  test1:
+    image: busybox
+    container_name: "test1" 
+    command: sh -c "while true; do { echo -e 'HTTP/1.1 200 OK\r\n'; echo 'test1 server'; } | nc -l -p 8080; done"
+    networks:
+            second:
+                aliases:
+                        - test1
+
+  test2:
+    image: busybox
+    container_name: "test2" 
+    command: sh -c "while true; do { echo -e 'HTTP/1.1 200 OK\r\n'; echo 'test2 server'; } | nc -l -p 8080; done"
+    networks:
+            second:
+                aliases:
+                        - test2
+
+networks:
+  second:

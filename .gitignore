@@ -1,0 +1,5 @@
+*.swp
+*.zip
+sp-cert.pem
+sp-key.pem
+*.bak
